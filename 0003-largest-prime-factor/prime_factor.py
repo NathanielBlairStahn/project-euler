@@ -6,7 +6,20 @@ What is the largest prime factor of the number 600851475143 ?"""
 
 import numpy as np
 from functools import reduce
-from collections import defaultdict, OrderedDict
+from collections import Counter, OrderedDict#, defaultdict
+
+#Implementation of OrderedCounter from Python Docs:
+#https://docs.python.org/3/library/collections.html#collections.OrderedDict
+#This will be used to store the prime factors of an integer in increasing order,
+#with the value associated with a prime key being the prime's multiplicity.
+class OrderedCounter(Counter, OrderedDict):
+    'Counter that remembers the order elements are first encountered'
+
+    def __repr__(self):
+        return '%s(%r)' % (self.__class__.__name__, OrderedDict(self))
+
+    def __reduce__(self):
+        return self.__class__, (OrderedDict(self),)
 
 def prime_factorization(n):
     """
@@ -17,7 +30,8 @@ def prime_factorization(n):
     if n == 0:
         return {}
 
-    factors = defaultdict(int)
+    #factors = defaultdict(int)
+    factors = OrderedCounter()
     dividend = n
     #sqrtn = np.sqrt(n)
 
@@ -48,16 +62,18 @@ def prime_factorization(n):
     if dividend > 1:
         factors[dividend] = 1
 
-    return OrderedDict(sorted(factors.items(), key=lambda t:t[0]))
+    #Return an ordered dictionary
+    #return OrderedDict(sorted(factors.items(), key=lambda t:t[0]))
+    return factors
 
-def prime_sieve(n):
+def sieve_of_eratosthenes(n):
     """
-    Returns the sieve of Eratosthenes up to n,
-    a list of booleans indicating whether each number from
+    Returns the sieve of Eratosthenes up to n, i.e.
+    a list of booleans indicating whether each integer from
     0 to n is prime.
 
-    The required space is (clearly) n, and the runtime is (surprisingly!)
-    n * loglog(n), by adding up the following:
+    The required space is (obviously) O(n), and the runtime is (surprisingly!)
+    O(n * loglog(n)), by adding up the following:
 
     -Time n to initialize the array.
     -Time sqrt(n) to visit each of the first sqrt(n) elements of the array.
@@ -68,7 +84,7 @@ def prime_sieve(n):
     = sqrt(n) + n * (1 + 1/2 + 1/3 + 1/5 + 1/7 + ... + 1/p_sqrt(n)),
     where the sum is over primes from 2 up to the largest prime <= sqrt(n).
     The series of reciprocal primes diverges as loglog(n), so the runtime is
-    sqrt(n) + n * loglog(sqrt(n)) = O(n * loglog(n))
+    sqrt(n) + n * loglog(sqrt(n)) = O(n * loglog(n)).
     """
     #indices are 0 to n
     is_prime = [True for _ in range(n+1)]
@@ -86,11 +102,11 @@ def prime_sieve(n):
 
     return is_prime
 
-def get_primes(n):
+def primes_up_to(n):
     """
     Returns a list of primes <= n, using the sieve of Eratosthenes.
     """
-    is_prime = prime_sieve(n)
+    is_prime = sieve_of_eratosthenes(n)
     return [p for p in range(n+1) if is_prime[p]]
 
 def prime_factors(n):
@@ -100,7 +116,7 @@ def prime_factors(n):
     """
     #First find all primes up to sqrt(n)
     sqrtn = int(np.sqrt(n))
-    primes = get_primes(sqrtn)
+    primes = primes_up_to(sqrtn)
     factors = [p for p in primes if n % p == 0]
 
     # #If we found none, then n must be prime, hence is its only prime factor
