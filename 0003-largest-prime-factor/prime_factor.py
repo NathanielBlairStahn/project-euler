@@ -6,47 +6,51 @@ What is the largest prime factor of the number 600851475143 ?"""
 
 import numpy as np
 from functools import reduce
-from collections import Counter, OrderedDict#, defaultdict
+from collections import Counter, OrderedDict
 
 #Implementation of OrderedCounter from Python Docs:
 #https://docs.python.org/3/library/collections.html#collections.OrderedDict
 #This will be used to store the prime factors of an integer in increasing order,
-#with the value associated with a prime key being the prime's multiplicity.
+#with the value associated with each prime key being the prime's multiplicity
+#in the factorization.
 class OrderedCounter(Counter, OrderedDict):
     'Counter that remembers the order elements are first encountered'
 
+    #This returns the string representation
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, OrderedDict(self))
 
+    #This is for pickling
     def __reduce__(self):
         return self.__class__, (OrderedDict(self),)
 
 def prime_factorization(n):
     """
-    Finds the prime factorization of n.
+    Finds the prime factorization of the integer n.
     Returns a dictionary where the keys are the prime factors,
     and the values are the multiplicities of the factors.
     """
-    if n == 0:
-        return {}
+    if n <= 0:
+        raise ValueError("n must be a positive integer.")
 
-    #factors = defaultdict(int)
     factors = OrderedCounter()
     dividend = n
     #sqrtn = np.sqrt(n)
 
-    #Factor out as many 2's as possible.
+    #Factor out as many 2's as possible, counting them as we go.
     while dividend%2 == 0:
         dividend //= 2
         factors[2] += 1
 
-    #Factor out each odd number from 3 up to sqrt(n)
-    #as many times as possible. Since we're visiting potential
-    #divisors in increasing order, any composite number d will
-    #have already been factored out by the time we reach it because
-    #it is a product of smaller primes, so we know that
-    #if d divides n, then d must be prime.
-    d = 3
+    #Factor out each odd number from 3 up to sqrt(n) as many times
+    #as possible, counting them as we go. Stop if the quotient reaches 1.
+    #
+    #Since we're visiting potential divisors in increasing order,
+    #any composite number will have already been factored out
+    #by the time we reach it because it is a product of smaller
+    #primes, so we know that if we find a number d that divides n,
+    #then d must be prime.
+    d = 3 #d is a potential divisor
     while dividend > 1 and d*d <= n:
         while dividend%d == 0:
             dividend //= d
@@ -55,22 +59,21 @@ def prime_factorization(n):
 
     #Catch the final factor > sqrt(n) if it exists.
     #Note that n can have at most one prime factor greater than sqrt(n).
-    #Once we have divided out all primes <= sqrt(n), the resulting factor
+    #Once we have divided out all primes <= sqrt(n), the resulting quotient
     #is either 1 (if n has no divisors > sqrt(n), in which case we're done)
     #or is a prime number greater than sqrt(n) (which may be n itself),
     #in which case we add it to the list of factors, with multiplicity 1.
     if dividend > 1:
         factors[dividend] = 1
 
-    #Return an ordered dictionary
-    #return OrderedDict(sorted(factors.items(), key=lambda t:t[0]))
+    #Return the factors as an ordered dictionary
     return factors
 
 def sieve_of_eratosthenes(n):
     """
-    Returns the sieve of Eratosthenes up to n, i.e.
-    a list of booleans indicating whether each integer from
-    0 to n is prime.
+    Returns the sieve of Eratosthenes up to the integer n, i.e.
+    an array of booleans indicating whether each integer from
+    0 to n (inclusive) is prime.
 
     The required space is (obviously) O(n), and the runtime is (surprisingly!)
     O(n * loglog(n)), by adding up the following:
@@ -111,20 +114,15 @@ def primes_up_to(n):
 
 def prime_factors(n):
     """
-    Returns a list of prime factors of n.
-    600851475143
+    Returns a list of prime factors of n, without taking
+    multiplicity into account.
     """
     #First find all primes up to sqrt(n)
     sqrtn = int(np.sqrt(n))
     primes = primes_up_to(sqrtn)
     factors = [p for p in primes if n % p == 0]
 
-    # #If we found none, then n must be prime, hence is its only prime factor
-    # if len(factors) == 0:
-    #     factors.append(n)
-    # else:
-
-    #Otherwise, we are missing at most one prime factor since
+    #Now, we are missing at most one prime factor since
     #n can have at most one prime factor > sqrt(n).
     #We will repeatedly divide by primes in our list of prime
     #factors if possible -- if the result ever gets below sqrt(n),
