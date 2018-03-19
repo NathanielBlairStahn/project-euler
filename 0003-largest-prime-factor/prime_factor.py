@@ -146,5 +146,8 @@ def prime_factors(n):
     return factors
 
 if __name__=="__main__":
+    factors = prime_factorization(600851475143)
+    print(list(factors.keys())[-1])
+
     factors = prime_factors(600851475143)
     print(factors[-1])
