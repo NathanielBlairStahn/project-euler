@@ -193,7 +193,7 @@ def prime_factorization(n):
     #it is a product of smaller primes, so we know that
     #if d divides n, then d must be prime.
     d = 3
-    while d*d <= n:
+    while dividend > 1 and d*d <= n:
         while dividend%d == 0:
             dividend //= d
             factors[d] += 1
