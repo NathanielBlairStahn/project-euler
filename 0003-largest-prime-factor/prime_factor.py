@@ -71,9 +71,8 @@ def prime_factorization(n):
 
 def sieve_of_eratosthenes(n):
     """
-    Returns the sieve of Eratosthenes up to the integer n, i.e.
-    an array of booleans indicating whether each integer from
-    0 to n (inclusive) is prime.
+    Returns an array of booleans indicating whether each integer from
+    0 to n (inclusive) is prime, using the sieve of Eratosthenes algorithm. 
 
     The required space is (obviously) O(n), and the runtime is (surprisingly!)
     O(n * loglog(n)), by adding up the following:
@@ -96,6 +95,8 @@ def sieve_of_eratosthenes(n):
     is_prime[0] = False
     is_prime[1] = False
 
+    #Note: I could optimize this like the above function to strike out
+    #multiples of 2 first, then increment by 2 to iterate over odd numbers.
     k = 2
     while k*k <= n:
         if is_prime[k]:
@@ -145,7 +146,9 @@ def prime_factors(n):
 
 if __name__=="__main__":
     factors = prime_factorization(600851475143)
+    print(factors)
     print(list(factors.keys())[-1])
 
     factors = prime_factors(600851475143)
+    print(factors)
     print(factors[-1])
