@@ -11,10 +11,18 @@ def gcd(a,b):
     Returns the greatest common divisor of a and b,
     using the Euclidean algorithm.
     """
+    #If b is 0, the gcd is a
     while b !=0:
-        temp = b
-        b = a % b
-        a = temp
+        #Code from Wikipedia:
+        # temp = b
+        # b = a % b
+        # a = temp
+        
+        #Better code:
+        r = a % b #If a = qb+r, compute the remainder r
+        a = b #Replace a with b
+        b = r #Replace b with r
+        #Note that if a<b, this code just swaps a and b
 
     return a
 
