@@ -35,5 +35,33 @@ Find the maximum total from top to bottom of the triangle below:
 04 62 98 27 23 09 70 98 73 93 38 53 60 04 23
 """
 
-def max_path_sum(triangle):
-    return 0
+def text_to_triangle(filename):
+    triangle = []
+    with open(filename) as f:
+        for line in f:
+            triangle.append([int(num) for num in line.split()])
+    return triangle
+
+def max_path_sum(triangle, copy = False):
+    if len(triangle)<1:
+        return 0
+
+    sums = triangle.copy() if copy else triangle
+
+    for r in range(1,len(sums)):
+        sums[r][0] += sums[r-1][0]
+        for c in range(1,r):
+            sums[r][c] += max(sums[r-1][c-1], sums[r-1][c])
+        sums[r][r] += sums[r-1][r-1]
+
+    return max(sums[-1])
+
+def main():
+    triangle = text_to_triangle('p018_triangle.txt')
+    print("Triangle:\n", triangle,'\n')
+    max_sum = max_path_sum(triangle)
+    print("Maximum path sum: ", max_sum, '\n')
+    print("Sums:\n", triangle)
+
+
+if __name__=="__main__": main()
