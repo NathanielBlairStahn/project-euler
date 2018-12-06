@@ -60,8 +60,14 @@ def main():
     triangle = text_to_triangle('p018_triangle.txt')
     print("Triangle:\n", triangle,'\n')
     max_sum = max_path_sum(triangle)
-    print("Maximum path sum: ", max_sum, '\n')
-    print("Sums:\n", triangle)
+    print("Maximum path sum for problem 18: ", max_sum, '\n')
+    print("Sums:\n", triangle, '\n')
+
+    triangle = text_to_triangle('p067_triangle.txt')
+    print("Large Triangle:\n", triangle,'\n')
+    max_sum = max_path_sum(triangle)
+    print("Maximum path sum for problem 67: ", max_sum, '\n')
+    # print("Sums for large triangle:\n", triangle)
 
 
 if __name__=="__main__": main()
